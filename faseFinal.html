@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Caixas de Dispositivos</title>
+  <link rel="icon" href="./IMG/favEV.png">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #e8e6e3;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      transition: background 1s ease;
+    }
+    h1 {
+      margin-bottom: 30px;
+    }
+    .devices {
+      display: flex;
+      justify-content: center;
+      gap: 100px;
+      margin-bottom: 60px;
+    }
+    .device {
+      width: 100px;
+      height: 120px;
+      color: #fff;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: grab;
+      user-select: none;
+    }
+     .device img{
+      width: 150px;
+      height: 160px;
+      color: #fff;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: grab;
+      user-select: none;
+    }
+    .device:active {
+      cursor: grabbing;
+    }
+    .boxes {
+      display: flex;
+      justify-content: center;
+      gap: 80px;
+      position: relative;
+    }
+    .box {
+      width: 130px;
+      height: 100px;
+      background: #ffffff;
+      border: 4px solid #7b6244;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      transition: transform 1.2s ease-in-out, opacity 0.8s ease;
+    }
+    .box img{
+      width: 150px;
+      height: 170px;
+      background: #ffffff;
+      border: 4px solid #7b6244;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      transition: transform 1.2s ease-in-out, opacity 0.8s ease;
+    }
+    .box.down {
+      transform: translateY(600px);
+      opacity: 0;
+    }
+    .dark-overlay {
+      position: fixed;
+      inset: 0;
+      background: black;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 2s ease;
+      z-index: 50;
+    }
+    .dark-overlay.on {
+      opacity: 0.8;
+      pointer-events: all;
+    }
+  </style>
+</head>
+<body>
+  <h1>Arraste cada dispositivo para sua caixa!</h1>
+  <div class="devices">
+    <div class="device" draggable="true" data-type="phone"><img src="./IMG/celular.png" alt=""></div>
+    <div class="device" draggable="true" data-type="laptop"><img src="./IMG/notebook.png" alt=""></div>
+  </div>
+  <div class="boxes">
+    <div class="box" data-accept="phone"><img src="./IMG/caixa.png" alt=""></div>
+    <div class="box" data-accept="laptop"><img src="./IMG/caixa.png" alt=""></div>
+  </div>
+  <div class="dark-overlay" id="overlay"></div>
+
+  <script>
+    const devices = document.querySelectorAll('.device');
+    const boxes = document.querySelectorAll('.box');
+    const overlay = document.getElementById('overlay');
+
+    let closedBoxes = 0;
+
+    devices.forEach(device => {
+      device.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('text/plain', device.dataset.type);
+      });
+    });
+
+    boxes.forEach(box => {
+      box.addEventListener('dragover', e => e.preventDefault());
+      box.addEventListener('drop', e => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData('text/plain');
+        if (box.dataset.accept === type && !box.classList.contains('down')) {
+          box.classList.add('down');
+          closedBoxes++;
+          if (closedBoxes === 2) {
+            setTimeout(() => overlay.classList.add('on'), 1500);
+            setTimeout(() => {
+              window.location.href = "http://127.0.0.1:5500/game/menu%20copy.html#";
+            }, 2000);
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

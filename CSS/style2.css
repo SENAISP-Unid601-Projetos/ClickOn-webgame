@@ -1,0 +1,110 @@
+/* básico */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+
+body{
+  /* FUNDO DE IMAGEM (agora funcionando) */
+  background: url("../IMG/fundo.png") no-repeat center center fixed;
+  background-size: cover;
+  
+  overflow:hidden;
+}
+
+/* container das nuvens */
+#cloud-container{
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1; /* nuvens acima do fundo */
+}
+
+/* cada nuvem criada via JS */
+.cloud{
+  position: absolute;
+  top: 0;
+  image-rendering: pixelated;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* container principal do jogo */
+.container{
+  position: relative;
+  z-index: 3; /* conteúdo acima das nuvens */
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: 70px;
+  text-align: center;
+}
+
+/* logo */
+#logo{
+  width: 450px;
+  max-width: 86%;
+  image-rendering: pixelated;
+  margin-left: 240px;
+  margin-right: 240px;
+  margin-top: 70px;
+  transform-origin: center;
+  display:block;
+
+  /* animações */
+  animation:
+    logoFloat 2.8s ease-in-out infinite,
+    logoGlow 2.2s ease-in-out infinite alternate;
+}
+
+/* ícones */
+.small-images{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  margin: -3px 0;
+}
+.small-images .icon{
+  width: 160px;
+  image-rendering: pixelated;
+  transition: transform .18s ease;
+}
+.small-images .icon:hover{
+  transform: translateY(-6px) scale(1.05);
+}
+
+/* botão imagem */
+.play-btn{
+  background: transparent;
+  border: none;
+  cursor:pointer;
+  width: 250px;
+  transition: transform .12s ease, filter .12s;
+  image-rendering: pixelated;
+}
+.play-btn:hover{
+  transform: translateY(-6px) scale(1.04);
+  filter:brightness(1.08);
+}
+
+/* Logo keyframes */
+@keyframes logoFloat{
+  0%{ transform: translateY(0) rotate(-1deg) scale(1); }
+  25%{ transform: translateY(-6px) rotate(1deg) scale(1.04); }
+  50%{ transform: translateY(0) rotate(-1deg) scale(1.02); }
+  75%{ transform: translateY(6px) rotate(1deg) scale(1.03); }
+  100%{ transform: translateY(0) rotate(-1deg) scale(1); }
+}
+
+@keyframes logoGlow{
+  0%{ filter: brightness(1); }
+  100%{ filter: brightness(1.20); }
+}
+
+/* responsivo */
+@media (max-width:520px){
+  #logo{ width: 320px }
+  .small-images .icon{ width: 120px }
+  .play-btn{ width: 220px }
+}

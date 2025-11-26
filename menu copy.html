@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>ClickOn</title>
+  <link rel="icon" type="image/png" href="favEV.png">
+  <style>
+    :root {
+      --verde-escuro: #bee1a7;
+      --verde-claro: #cae1b4;
+      --branco: #F8FFF8;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Pixelify Sans', static;
+    }
+
+    body {
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      /* Background gradient */
+      background: linear-gradient(135deg, var(--verde-claro), var(--verde-escuro));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* The Background Leaves Canvas */
+    canvas#background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    /* FIXED HERE: 
+       Changed display: none -> display: block 
+       This makes it visible immediately.
+    */
+    #cutsceneCanvas {
+      display: block; 
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black; /* Background is black for the cinematic effect */
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="background"></canvas>
+
+  <canvas id="cutsceneCanvas"></canvas>
+
+  <script>
+    // --- 1. BACKGROUND ANIMATION (LEAVES) ---
+    const canvas = document.getElementById("background");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const leafCount = 40;
+    const leaves = [];
+    const leafShape = new Path2D("M10 0 C15 10, 15 25, 10 30 C5 25, 5 10, 10 0 Z");
+
+    for (let i = 0; i < leafCount; i++) {
+      leaves.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 0.6 + 0.3,
+        speedX: (Math.random() - 0.5) * 0.5,
+        speedY: Math.random() * 0.6 + 0.2,
+        rot: Math.random() * Math.PI,
+        color: Math.random() > 0.5 ? "#B5CC9FAA" : "#5D7D47AA"
+      });
+    }
+
+    function drawLeaves() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let leaf of leaves) {
+        ctx.save();
+        ctx.translate(leaf.x, leaf.y);
+        ctx.rotate(leaf.rot);
+        ctx.scale(leaf.size, leaf.size);
+        ctx.fillStyle = leaf.color;
+        ctx.fill(leafShape);
+        ctx.restore();
+
+        leaf.y += leaf.speedY;
+        leaf.x += leaf.speedX;
+        leaf.rot += 0.01;
+
+        if (leaf.y > canvas.height + 20) {
+          leaf.y = -20;
+          leaf.x = Math.random() * canvas.width;
+        }
+      }
+      requestAnimationFrame(drawLeaves);
+    }
+
+    drawLeaves();
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+
+    // --- 2. CUTSCENE LOGIC ---
+    class SimpleCutscene {
+      constructor(ctx, imagePaths, onComplete) {
+        this.ctx = ctx;
+        this.canvas = ctx.canvas;
+        this.images = [];
+        this.imagePaths = imagePaths;
+        this.currentScene = 0;
+        this.alpha = 0;
+        this.fadeSpeed = 0.01;
+        this.timer = 0;
+        this.holdTime = 200;
+        this.onComplete = onComplete;
+        this.finished = false;
+
+        this.sceneTexts = [
+          "O que começou como uma ideia, agora ganhava ruas e destinos",
+          "De casa em casa, ele levava não só tecnologia, mas um novo jeito de pensar. ",
+          "Cada entrega era uma faísca de mudança, um futuro sendo construído, peça por peça. ",
+          "O que antes era lixo, agora iluminava lares e corações. ",
+          "E entre gestos simples, Diego descobriu: mudar o mundo começa com o que já temos!"
+        ];
+      }
+
+      loadImages(callback) {
+        let loaded = 0;
+        this.imagePaths.forEach((src, i) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = () => {
+            this.images[i] = img;
+            loaded++;
+            if (loaded === this.imagePaths.length) callback();
+          };
+          img.onerror = () => {
+             console.error("Image failed to load:", src);
+             // Even if it fails, we count it so the game doesn't freeze
+             loaded++;
+             if (loaded === this.imagePaths.length) callback();
+          }
+        });
+      }
+
+      updateAndDraw() {
+        if (this.finished) return;
+
+        const img = this.images[this.currentScene];
+        
+        // Clear screen (black background is set in CSS)
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        if (img) {
+            if (this.alpha < 1) this.alpha += this.fadeSpeed;
+            else this.timer++;
+
+            this.ctx.globalAlpha = this.alpha;
+            this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.globalAlpha = 1;
+        }
+
+        this.drawSceneText(this.sceneTexts[this.currentScene], this.alpha);
+
+        if (this.timer >= this.holdTime) {
+          this.currentScene++;
+          this.alpha = 0;
+          this.timer = 0;
+        }
+
+        if (this.currentScene >= this.images.length) {
+          this.finished = true;
+          if (this.onComplete) this.onComplete();
+        }
+      }
+
+      drawSceneText(text, alpha) {
+        if (!text) return;
+        const ctx = this.ctx;
+        ctx.globalAlpha = Math.min(alpha, 1);
+        ctx.fillStyle = "white";
+        // Adjusted font size slightly for better fit
+        ctx.font = "30px monospace"; 
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.shadowColor = "black";
+        ctx.shadowBlur = 4;
+
+        const x = this.canvas.width / 2;
+        const y = this.canvas.height - 50;
+        const maxWidth = this.canvas.width - 60;
+        const lines = this.wrapText(ctx, text, maxWidth);
+        const lineHeight = 30;
+
+        lines.forEach((line, i) => {
+          ctx.fillText(line, x, y - (lines.length - 1 - i) * lineHeight);
+        });
+
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+      }
+
+      wrapText(ctx, text, maxWidth) {
+        const words = text.split(" ");
+        const lines = [];
+        let currentLine = "";
+
+        for (let i = 0; i < words.length; i++) {
+          const testLine = currentLine + words[i] + " ";
+          const testWidth = ctx.measureText(testLine).width;
+          if (testWidth > maxWidth && i > 0) {
+            lines.push(currentLine.trim());
+            currentLine = words[i] + " ";
+          } else {
+            currentLine = testLine;
+          }
+        }
+        lines.push(currentLine.trim());
+        return lines;
+      }
+    }
+
+    // --- 3. INITIALIZATION ---
+    const cutsceneCanvas = document.getElementById("cutsceneCanvas");
+    const ctx2 = cutsceneCanvas.getContext("2d");
+    cutsceneCanvas.width = window.innerWidth;
+    cutsceneCanvas.height = window.innerHeight;
+
+    // Make sure canvas resizes if window resizes
+    window.addEventListener("resize", () => {
+        cutsceneCanvas.width = window.innerWidth;
+        cutsceneCanvas.height = window.innerHeight;
+    });
+
+    const cutsceneImages = [
+      "./IMG/final1.png",
+      "./IMG/final2.png",
+      "./IMG/final3.png",
+      "./IMG/final4.png",
+      "./IMG/final5.png"
+    ];
+
+    const cutscene = new SimpleCutscene(ctx2, cutsceneImages, () => {
+      // Redirect when finished
+      window.location.href = "http://127.0.0.1:5500/game/menu.html";
+    });
+
+    // Start loading and playing immediately
+    cutscene.loadImages(() => {
+      function playCutscene() {
+        cutscene.updateAndDraw();
+        if (!cutscene.finished) requestAnimationFrame(playCutscene);
+      }
+      playCutscene();
+    });
+    
+  </script>
+</body>
+</html>

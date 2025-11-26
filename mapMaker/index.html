@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Waste Tile Editor</title>
+<style>
+  body {
+    background: #1a1a1a;
+    color: #eee;
+    font-family: monospace;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+  }
+  #toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  button {
+    background: #333;
+    color: #eee;
+    border: 1px solid #666;
+    padding: 5px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button.selected {
+    background: #00bcd4;
+    color: #000;
+    border-color: #fff;
+  }
+  #canvas {
+    background: #111;
+    image-rendering: pixelated;
+    border: 2px solid #444;
+    cursor: crosshair;
+  }
+  #output {
+    width: 80%;
+    height: 100px;
+    background: #111;
+    color: #0f0;
+    margin-top: 10px;
+  }button.selected {
+  border: 3px solid #00ffaa;
+  transform: scale(1.05);
+}
+
+</style>
+</head>
+<body>
+
+<h2>🧩 E-Waste Tile Editor</h2>
+<div id="toolbar"></div>
+<canvas id="canvas"></canvas>
+<br>
+<button id="btn-export">Export Map</button>
+<button id="btn-clear">Clear</button>
+<br>
+<textarea id="output" readonly></textarea>
+
+<script src="mapmaker.js"></script>
+</body>
+</html>
