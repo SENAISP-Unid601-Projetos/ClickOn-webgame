@@ -3138,6 +3138,8 @@ function startSortingGame(materials) {
         // Call endSortingGame, which will trigger the transition
         setTimeout(endSortingGame, 500); // Short delay so it's not instant
         return; // Don't start item generation
+    }else if(totalMaterialsToSort > 50){
+        totalMaterialsTosort = 50
     }
 
     // Start spawning items from our new list
