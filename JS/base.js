@@ -1751,7 +1751,7 @@ class Dog {
       this.y + this.height > player.y;
       
     if (isColliding) {
-      const currentTime = Date.now();
+      const current Date.now();
    
       console.log("Dog collided with player!");
       
@@ -1807,7 +1807,7 @@ let dogs = [];
 /* -------------------------------------------------------------------------- */
 
 // total time in seconds
-let totalTime = 12; // 2 minutes
+let totalTime = 60; // 2 minutes
 
 let timeLeft = totalTime;
 let timerInterval = null;
@@ -2899,7 +2899,7 @@ function gameLoop(timestamp) {
         if (lastTime < 2000 && started && startingMessage) {         
         messageBox.isActive = true;
         messageBox.displayedText = "Colete  itens  antes  que  o  tempo  acabe!";
-        messageBox.message = "Colete itens antes que o tempo acabe!       WASD para mover.     Evite cachorros!      Pressione [E] para fechar ou interagir com os obstáculos do mapa!";
+        messageBox.message = "Colete itens antes que o tempo acabe!       WASD para mover e [shift] pra correr.     Evite cachorros!      Pressione [E] para fechar ou interagir com os obstáculos do mapa!";
         startingMessage = false;
         }else{// FIX: Only start timer if we are NOT transitioning
         if (!transitionManager.isActive) {
