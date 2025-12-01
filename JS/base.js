@@ -1751,7 +1751,7 @@ class Dog {
       this.y + this.height > player.y;
       
     if (isColliding) {
-      const current = Date.now();
+      const currentTime = Date.now();
    
       console.log("Dog collided with player!");
       
