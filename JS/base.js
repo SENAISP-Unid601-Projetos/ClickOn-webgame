@@ -2899,7 +2899,7 @@ function gameLoop(timestamp) {
         if (lastTime < 2000 && started && startingMessage) {         
         messageBox.isActive = true;
         messageBox.displayedText = "Colete  itens  antes  que  o  tempo  acabe!";
-        messageBox.message = "Colete itens antes que o tempo acabe!       WASD para mover e [shift] pra correr.     Evite cachorros!      Pressione [E] para fechar ou interagir com os obstáculos do mapa!";
+        messageBox.message = "Colete itens antes que o tempo acabe!       WASD para mover.     Evite cachorros!      Pressione [E] para fechar ou interagir com os obstáculos do mapa!";
         startingMessage = false;
         }else{// FIX: Only start timer if we are NOT transitioning
         if (!transitionManager.isActive) {
@@ -3138,8 +3138,6 @@ function startSortingGame(materials) {
         // Call endSortingGame, which will trigger the transition
         setTimeout(endSortingGame, 500); // Short delay so it's not instant
         return; // Don't start item generation
-    }else if(totalMaterialsToSort > 50){
-        totalMaterialsTosort = 50
     }
 
     // Start spawning items from our new list
@@ -3489,6 +3487,9 @@ function drawBaseFrame() {
 function drawPieces() {
     gameState.pieces.forEach(piece => {
         if (!piece.placed) {
+            ctx.strokeStyle ="rgb(250, 235, 200)" ;
+            
+            ctx.strokeRect(piece.correctX, piece.correctY, piece.width, piece.height);
             if(piece.image){
                 ctx.drawImage(piece.image,piece.x, piece.y, piece.width, piece.height)
             }else{
